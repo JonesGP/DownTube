@@ -24,7 +24,7 @@
                     text: 'Enviar'
                     size_hint: (.1, None)
                     pos_hint: {'center_x': .5 , 'center_y': .5}
-                    on_release: app.confirm_link(link.text, imagevideo, titlevideo, sizevideo, boxdownloads)
+                    on_release: app.confirm_link(link.text, imagevideo, titlevideo, sizevideo, boxdownloads, pathsave.text, progressbardown)
                 
                 
             MDBoxLayout:
@@ -65,7 +65,7 @@
                     orientation: 'vertical'
                     MDProgressBar:
                         id: progressbardown
-                        value: 10
+                        value: 0
                         size_hint: (1, .1)
                         color: app.theme_cls.accent_color
                     MDTextField:
