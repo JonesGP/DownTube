@@ -1,79 +1,15 @@
-<Home>:
-    MDBoxLayout:
-        orientation: 'vertical'
-        MDTopAppBar:
-            title: 'Download Youtube'
-            size_hint: (1, .1)
-        MDBoxLayout:
-            id: content
-            orientation: 'vertical'
-            size_hint: (1, .9)
-            padding: 10
-            MDBoxLayout:
-                orientation: 'horizontal'
-                size_hint: (1, .1)
-                MDTextField:
-                    id: link
-                    hint_text: 'Link do video'
-                    size_hint: (.8, 1.1)
-                    pos_hint: {'center_x': .5 , 'center_y': .3}
-                MDLabel:
-                    text: ' '
-                    size_hint: (.05, 1)
-                MDRaisedButton:
-                    text: 'Enviar'
-                    size_hint: (.1, None)
-                    pos_hint: {'center_x': .5 , 'center_y': .5}
-                    on_release: app.confirm_link(link.text, imagevideo, titlevideo, sizevideo, boxdownloads, pathsave.text, progressbardown)
-                
-                
-            MDBoxLayout:
-                orientation: 'vertical'
-                size_hint: (1, .8)
-                MDBoxLayout:
-                    orientation: 'horizontal'
-                    AsyncImage:
-                        id: imagevideo
-                        source: ''
-                        size_hint: (0.5, 1)
-                        
-                    MDBoxLayout:
-                        id: floatlayoutconfigs
-                        orientation: 'vertical'
-                        size_hint: (0.5, 1)
-                        padding: 10
-                        MDLabel:
-                            text: 'Titulo do video'
-                        MDLabel:
-                            id: titlevideo
-                            text: ''
-                        MDLabel:
-                            text: 'Tempo de duração' 
-                        MDLabel:
-                            id: sizevideo
-                            text: '' 
-                        MDLabel:
-                            text: 'Selecione a resolução que deseja baixar:'
-
-                        MDBoxLayout:
-                            id: boxdownloads
-                            orientation: 'horizontal'
-                            size_hint: (1, 1)
-                            pos_hint: {'center_x': .5 , 'center_y': .5}
-                            spacing:10
-                MDBoxLayout:
-                    orientation: 'vertical'
-                    MDProgressBar:
-                        id: progressbardown
-                        value: 0
-                        size_hint: (1, .1)
-                        color: app.theme_cls.accent_color
-                    MDTextField:
-                        id: pathsave
-                        hint_text: 'Caminho para salvar'
-                        size_hint: (1, .4)
-                    MDLabel:
-                        text: '.'
-                        size_hint: (1, .8)
-                    
-                
+#:include "libs/screens/desktop/desktopscreen.kv"
+MDBottomNavigation:
+    #painel_color: "#eeeaea"
+    selected_color_background: "orange"
+    text_color_active:'lightgrey'
+    MDBottomNavigationItem:
+        name: 'home'
+        icon: 'home'
+        DesktopView:
+    MDBottomNavigationItem:
+        name: 'search'
+        icon: 'movie-search'
+    MDBottomNavigationItem:
+        name: 'playlist'
+        icon: 'playlist-play'

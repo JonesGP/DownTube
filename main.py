@@ -15,15 +15,30 @@ pathsave = ""
 jachamado = False
 tamanhototal = 0
 progressbardown1 = None
+themedark = False
 class DownTube(MDApp):
-
-    def confirm_link(self, text, imagevideo, titlevideo, sizevideo, boxdownloads, pathsave, progressbardown):
+    def theme_button(self):
+        global themedark
+        if not themedark:
+            themedark = True
+            self.theme_cls.theme_style = "Dark"
+            self.theme_cls.primary_palette = "BlueGray"
+            self.theme_cls.accent_palette = "Teal"
+        else:
+            themedark = False
+            self.theme_cls.theme_style = "Light"
+            self.theme_cls.primary_palette = "LightBlue"
+            self.theme_cls.accent_palette = "Teal"
+    def confirm_link(self, text, imagevideo, titlevideo, sizevideo, boxdownloads, pathsave, progressbardown, chanelvideo):
         yt = YouTube(text)
+        
         global progressbardown1
+        yt.register_on_progress_callback(self.on_progress)
         progressbardown1 = progressbardown
         pathsave = pathsave
         imagevideo.source = yt.thumbnail_url
         titlevideo.text = yt.title
+        chanelvideo.text = yt.author
         #tempo do video 
         segundos = yt.length
         horas, resto = divmod(segundos, 3600)
@@ -36,32 +51,14 @@ class DownTube(MDApp):
             resolutionslist.append(video.resolution)
             buttonraised = MDRaisedButton(text=f"{video.resolution} {str(int(video.filesize_mb))}MB", on_release=self.create_button_callback(video, pathsave))
             boxdownloads.add_widget(buttonraised)
-    
+        for e in yt.streams:
+            print(e)
+     
     def create_button_callback(self, video, pathsave):
         return lambda x: self.downloadvideo(video, pathsave)
 
     def on_progress(self, chunk: bytes, file_handler: BinaryIO, bytes_remaining: int):
-        """On progress callback function.
-
-        This function writes the binary data to the file, then checks if an
-        additional callback is defined in the monostate. This is exposed to
-        allow things like displaying a progress bar.
-
-        :param bytes chunk:
-            Segment of media file binary data, not yet written to disk.
-        :param file_handler:
-            The file handle where the media is being written to.
-        :type file_handler:
-            :py:class:`io.BufferedWriter`
-        :param int bytes_remaining:
-            The delta between the total file size in bytes and amount already
-            downloaded.
-
-        :rtype: None
-        
-        """
         self.progress_bar_download(bytes_remaining)
-        file_handler.write(chunk)
         
     def progress_bar_download(self, bytes_remaining, **kwargs):
         global jachamado
@@ -85,19 +82,23 @@ class DownTube(MDApp):
         global tamanhototal
         jachamado = False
         tamanhototal = 0
-        video.on_progress = self.on_progress
         if pathsave == "":
             pathsave = Path.home() / "Downloads"
         video.download(pathsave)
 
     def build(self, **kwargs):
         Window.size = [720,600]
+        Window.set_icon("icon.ico")
+        self.theme_cls.theme_style = "Light"
+        self.theme_cls.primary_palette = "LightBlue"
+        self.theme_cls.accent_palette = "Blue"
+        self.theme_cls.theme_style_switch_animation = True
         self.load_all_kv_files()
         self.title = "DownTube - Developed by JonesGP"
-        return Home()
+        return Builder.load_file('libs/screens/home.kv')
     
     def load_all_kv_files(self):
-        Builder.load_file('libs/screens/home.kv')
+        pass
     
 if __name__ == "__main__":
     DownTube().run()
