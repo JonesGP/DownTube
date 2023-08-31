@@ -1,4 +1,5 @@
-#:include "libs/screens/desktop/desktopscreen.kv"
+#:include "libs/screens/desktop/downloadscreen.kv"
+#:include "libs/screens/desktop/searchscreen/searchscreen.kv"
 MDBottomNavigation:
     #painel_color: "#eeeaea"
     selected_color_background: "orange"
@@ -6,10 +7,11 @@ MDBottomNavigation:
     MDBottomNavigationItem:
         name: 'home'
         icon: 'home'
-        DesktopView:
+        DownloadScreen:
     MDBottomNavigationItem:
         name: 'search'
         icon: 'movie-search'
+        SearchScreen:
     MDBottomNavigationItem:
         name: 'playlist'
         icon: 'playlist-play'

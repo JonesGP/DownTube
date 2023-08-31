@@ -9,6 +9,9 @@ from libs.screens.home import Home
 from kivy.lang.builder import Builder
 from kivymd.uix.button import MDRaisedButton
 
+from libs.screens.desktop.searchscreen.searchscreen import MySearchFunctions
+
+
 videosob = []
 resolutionslist = []
 pathsave = ""
@@ -17,6 +20,9 @@ tamanhototal = 0
 progressbardown1 = None
 themedark = False
 class DownTube(MDApp):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.searchclass = MySearchFunctions()
     def theme_button(self):
         global themedark
         if not themedark:
@@ -30,29 +36,30 @@ class DownTube(MDApp):
             self.theme_cls.primary_palette = "LightBlue"
             self.theme_cls.accent_palette = "Teal"
     def confirm_link(self, text, imagevideo, titlevideo, sizevideo, boxdownloads, pathsave, progressbardown, chanelvideo):
-        yt = YouTube(text)
-        
+        try:
+            yt = YouTube(text)
+        except:
+            return
         global progressbardown1
         yt.register_on_progress_callback(self.on_progress)
         progressbardown1 = progressbardown
         pathsave = pathsave
         imagevideo.source = yt.thumbnail_url
-        titlevideo.text = yt.title
-        chanelvideo.text = yt.author
+        titlevideo.text = f"Titulo: {yt.title}"
+        chanelvideo.text = f"Canal: {yt.author}"
         #tempo do video 
         segundos = yt.length
         horas, resto = divmod(segundos, 3600)
         minutos, segundos = divmod(resto, 60)
         formated_time = f"{horas:02d}:{minutos:02d}:{segundos:02d}"
-        sizevideo.text = str(formated_time)
+        sizevideo.text = f"Tempo: {str(formated_time)}"
         boxdownloads.clear_widgets()
         for video in yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution'):
             videosob.append(video)
             resolutionslist.append(video.resolution)
             buttonraised = MDRaisedButton(text=f"{video.resolution} {str(int(video.filesize_mb))}MB", on_release=self.create_button_callback(video, pathsave))
             boxdownloads.add_widget(buttonraised)
-        for e in yt.streams:
-            print(e)
+        boxdownloads.add_widget(MDRaisedButton(text=f"{yt.streams.filter(only_audio=True).order_by('abr').last().subtype} {str(int(yt.streams.filter(only_audio=True).order_by('abr').last().filesize_mb))}MB", on_release=self.create_button_callback(yt.streams.filter(only_audio=True).order_by('abr').last(), pathsave)))
      
     def create_button_callback(self, video, pathsave):
         return lambda x: self.downloadvideo(video, pathsave)
@@ -100,5 +107,6 @@ class DownTube(MDApp):
     def load_all_kv_files(self):
         pass
     
+mysearchfunctions = MySearchFunctions()
 if __name__ == "__main__":
     DownTube().run()

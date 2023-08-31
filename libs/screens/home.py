@@ -1,8 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.responsivelayout import MDResponsiveLayout
-from libs.screens.mobile.mobilescreen import MobileView
-from libs.screens.desktop.desktopscreen import DesktopView
-from libs.screens.tablet.tabletscreen import TabletView
+from libs.screens.desktop.downloadscreen import DownloadScreen
+from libs.screens.desktop.searchscreen.searchscreen import SearchScreen
 
 class Home(MDScreen):
     pass
