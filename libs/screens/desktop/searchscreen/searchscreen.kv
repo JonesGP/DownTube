@@ -9,6 +9,7 @@
                 id: search
                 hint_text: 'Pesquisar'
                 icon_right_color: app.theme_cls.primary_color
+                on_text_validate: app.searchclass.searchvideos(search.text, boxvideossearch)
             MDIconButton:
                 icon: 'magnify'
                 on_release: app.searchclass.searchvideos(search.text, boxvideossearch)

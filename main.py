@@ -10,6 +10,7 @@ from kivy.lang.builder import Builder
 from kivymd.uix.button import MDRaisedButton
 
 from libs.screens.desktop.searchscreen.searchscreen import MySearchFunctions
+from libs.functions.conversionsfuncs import ConversionsFuncs
 
 
 videosob = []
@@ -23,6 +24,8 @@ class DownTube(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.searchclass = MySearchFunctions()
+        self.converfuncsclass = ConversionsFuncs()
+        
     def theme_button(self):
         global themedark
         if not themedark:
@@ -47,13 +50,11 @@ class DownTube(MDApp):
         imagevideo.source = yt.thumbnail_url
         titlevideo.text = f"Titulo: {yt.title}"
         chanelvideo.text = f"Canal: {yt.author}"
-        #tempo do video 
-        segundos = yt.length
-        horas, resto = divmod(segundos, 3600)
-        minutos, segundos = divmod(resto, 60)
-        formated_time = f"{horas:02d}:{minutos:02d}:{segundos:02d}"
+        #tempo do video
+        formated_time = self.converfuncsclass.formtimeseg(yt.length)
         sizevideo.text = f"Tempo: {str(formated_time)}"
         boxdownloads.clear_widgets()
+        print(str(yt.publish_date))
         for video in yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution'):
             videosob.append(video)
             resolutionslist.append(video.resolution)
