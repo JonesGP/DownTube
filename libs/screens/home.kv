@@ -1,17 +1,20 @@
 #:include "libs/screens/desktop/downloadscreen.kv"
 #:include "libs/screens/desktop/searchscreen/searchscreen.kv"
 MDBottomNavigation:
+    id: bottom_navigation
     #painel_color: "#eeeaea"
     selected_color_background: "orange"
-    text_color_active:'lightgrey'
+    text_color_active:'lightgrey' 
     MDBottomNavigationItem:
+        id: hometab
         name: 'home'
         icon: 'home'
+        text: 'Download'
         DownloadScreen:
+            id: aidentro
     MDBottomNavigationItem:
+        id: searchscreentab
         name: 'search'
         icon: 'movie-search'
+        text: 'Procurar'
         SearchScreen:
-    MDBottomNavigationItem:
-        name: 'playlist'
-        icon: 'playlist-play'

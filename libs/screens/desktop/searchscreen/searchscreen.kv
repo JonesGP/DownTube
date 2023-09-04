@@ -1,3 +1,5 @@
+#:include "libs/screens/home.kv"
+#:include "libs/screens/desktop/downloadscreen.kv"
 <SearchScreen>
     MDBoxLayout:
         orientation: 'vertical'
@@ -5,21 +7,25 @@
         MDBoxLayout:
             orientation: 'horizontal'
             size_hint: (1, 0.1)
-            MDTextField:
+            MDTextField: 
                 id: search
                 hint_text: 'Pesquisar'
                 icon_right_color: app.theme_cls.primary_color
-                on_text_validate: app.searchclass.searchvideos(search.text, boxvideossearch)
+                hint_text_color_normal: app.theme_cls.text_color
+                line_color_normal: app.theme_cls.text_color
+                text_color_normal: app.theme_cls.text_color
+                on_text_validate: app.searchclass.searchvideos(app, search.text, boxvideossearch)
             MDIconButton:
                 icon: 'magnify'
-                on_release: app.searchclass.searchvideos(search.text, boxvideossearch)
+                text_color: app.theme_cls.text_color
+                on_release: app.searchclass.searchvideos(app, search.text, boxvideossearch)
                 
         MDScrollView:
             do_scroll_x: False
             do_scroll_y: True
             size_hint: (1, 0.9)
             MDBoxLayout:
-                id: boxvideossearch
+                id: boxvideossearch 
                 orientation: 'vertical'
                 size_hint: 1, None
                 height: self.minimum_height

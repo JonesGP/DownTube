@@ -1,14 +1,16 @@
 from pytube import YouTube
 from pathlib import Path
 import threading
-
+import logging
+logging.raiseExceptions = False
 from typing import BinaryIO
 from kivymd.app import MDApp
 from kivy.core.window import Window
-from libs.screens.home import Home
 from kivy.lang.builder import Builder
 from kivymd.uix.button import MDRaisedButton
+from kivy.config import Config
 
+from libs.screens.home import Home
 from libs.screens.desktop.searchscreen.searchscreen import MySearchFunctions
 from libs.functions.conversionsfuncs import ConversionsFuncs
 
@@ -25,6 +27,7 @@ class DownTube(MDApp):
         super().__init__(**kwargs)
         self.searchclass = MySearchFunctions()
         self.converfuncsclass = ConversionsFuncs()
+        self.home = Home()
         
     def theme_button(self):
         global themedark
@@ -38,9 +41,25 @@ class DownTube(MDApp):
             self.theme_cls.theme_style = "Light"
             self.theme_cls.primary_palette = "LightBlue"
             self.theme_cls.accent_palette = "Teal"
-    def confirm_link(self, text, imagevideo, titlevideo, sizevideo, boxdownloads, pathsave, progressbardown, chanelvideo):
+    def confirm_link(self, linkvideo):
+        widgetsdownloadscreen = []
+        for item in self.root.ids.hometab.children[0].ids:
+            widgetsdownloadscreen.append(getattr(self.root.ids.hometab.children[0].ids, item))
+        imagevideo = widgetsdownloadscreen[3]
+        titlevideo = widgetsdownloadscreen[5]
+        sizevideo = widgetsdownloadscreen[6]
+        chanelvideo = widgetsdownloadscreen[7]
+        boxdownloads = widgetsdownloadscreen[8]
+        progressbardown = widgetsdownloadscreen[9]
+        pathsave = widgetsdownloadscreen[10].text
+        
+        
+        
         try:
-            yt = YouTube(text)
+            if linkvideo == str:
+                yt = YouTube(linkvideo)
+            else:
+                yt = linkvideo
         except:
             return
         global progressbardown1
