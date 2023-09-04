@@ -13,6 +13,6 @@ Por enquanto so da pra baixar videos até 720p por limitações da api do google
 
 <h2>Recursos que estão por vim</h2>
   Downloads de Playlist
-  Tela de configuração para formatos
-  Converter audio em outros formatos além de MP3
+  Tela de configuração para formatos </br>
+  Converter audio em outros formatos além de MP3</br>
   converter videos em outros formatos além de MP4
