@@ -52,14 +52,12 @@ class DownTube(MDApp):
         boxdownloads = widgetsdownloadscreen[8]
         progressbardown = widgetsdownloadscreen[9]
         pathsave = widgetsdownloadscreen[10].text
-        
-        
-        
+
         try:
-            if linkvideo == str:
+            if type(linkvideo) == str:
                 yt = YouTube(linkvideo)
-            else:
-                yt = linkvideo
+            elif type(linkvideo) == YouTube:
+                yt = linkvideo  
         except:
             return
         global progressbardown1
@@ -73,7 +71,6 @@ class DownTube(MDApp):
         formated_time = self.converfuncsclass.formtimeseg(yt.length)
         sizevideo.text = f"Tempo: {str(formated_time)}"
         boxdownloads.clear_widgets()
-        print(str(yt.publish_date))
         for video in yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution'):
             videosob.append(video)
             resolutionslist.append(video.resolution)
@@ -114,7 +111,9 @@ class DownTube(MDApp):
         video.download(pathsave)
 
     def build(self, **kwargs):
-        Window.size = [720,600]
+        Window.minimum_height = 599
+        Window.minimum_width = 799
+        Window.icon = "icon.ico"
         Window.set_icon("icon.ico")
         self.theme_cls.theme_style = "Light"
         self.theme_cls.primary_palette = "LightBlue"
