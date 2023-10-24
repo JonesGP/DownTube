@@ -1,0 +1,87 @@
+<PlayListScreen>
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        MDBoxLayout:
+            id: boxplaylistsearch
+            orientation: 'horizontal'
+            size_hint: (1, 0.1)
+            MDTextField:
+                id: searchplaylist
+                hint_text: 'Pesquisar'
+                icon_right_color: app.theme_cls.primary_color
+                hint_text_color_normal: app.theme_cls.text_color
+                line_color_normal: app.theme_cls.text_color
+                text_color_normal: app.theme_cls.text_color
+                on_text_validate: app.searchclass.searchvideos(app, searchplaylist.text, boxplaylistvideo)
+            MDIconButton:
+                icon: 'magnify'
+                on_release: app.searchclass.searchvideos(app, searchplaylist.text, boxplaylistvideo)
+        MDBoxLayout:
+            id: boxplaylistcontentitems
+            orientation: 'horizontal'
+            size_hint: (1, 0.9)
+            spacing: '10dp'
+            MDBoxLayout:
+                orientation: 'vertical'
+                size_hint: (0.6, 1)
+                height: self.minimum_height
+                padding: 10
+                radius: [20,20,20,20]
+                MDScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint: (1, 1)
+                    elevation: 0
+                    MDBoxLayout:
+                        id: boxplaylistvideo
+                        orientation: 'vertical'
+                        size_hint: (1, None)
+                        height: self.minimum_height
+            MDBoxLayout:
+                id: boxplaylistinfocontent
+                orientation: 'vertical'
+                size_hint: (0.4, 1)
+                spacing: '10dp'
+                MDBoxLayout:
+                    id: boxplaylistinfoplay
+                    orientation: 'vertical'
+                    size_hint: (1, 0.5)
+                    padding: 10
+                    radius: [20,20,20,20]
+                    MDLabel:
+                        id: nameplaylist
+                        text: 'Nome da Playlist: '
+                    MDLabel:
+                        id: lengthplaylist
+                        text: 'Quantidade de videos: '
+                MDBoxLayout:
+                    id: boxplaylistinfodown
+                    orientation: 'vertical'
+                    size_hint: (1, 0.5)
+                    padding: 10
+                    radius: [20,20,20,20]
+                    MDProgressBar:
+                        id: progressbarplaylist
+                        value: 0
+                        max: 100
+                        size_hint: (1, None)
+                        height: '30dp'
+                    MDBoxLayout:
+                        id: boxprogressbar
+                        orientation: 'horizontal'
+                        size_hint: (1, 0.3)
+                        MDLabel:
+                            id: completeplaylist
+                            text: 'Progresso: '
+                        MDLabel:
+                            id: quantdown
+                            text: '0/0'
+
+                    
+                    MDTextField:
+                        id: fieldplaylisdopdown
+                        hint_text: 'EX: 1-2 2-3-6-8'
+                    MDRaisedButton:
+                        text: 'Baixar'
+                        on_release: app.searchplaylist.download_playlist(app, fieldplaylisdopdown.text)

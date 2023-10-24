@@ -1,5 +1,7 @@
 #:include "libs/screens/desktop/downloadscreen.kv"
 #:include "libs/screens/desktop/searchscreen/searchscreen.kv"
+#:include "libs/screens/desktop/playlistscreen/playlistscreen.kv"
+
 MDBottomNavigation:
     id: bottom_navigation
     #painel_color: "#eeeaea"
@@ -18,3 +20,10 @@ MDBottomNavigation:
         icon: 'movie-search'
         text: 'Procurar'
         SearchScreen:
+    MDBottomNavigationItem:
+        id: playlistscreentab
+        name: 'playlistscreen'
+        icon: 'playlist-play'
+        text: 'PlayList'
+        PlayListScreen:
+

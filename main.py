@@ -1,4 +1,5 @@
 from pytube import YouTube
+from pytube import Playlist
 from pathlib import Path
 import threading
 import logging
@@ -9,10 +10,12 @@ from kivy.core.window import Window
 from kivy.lang.builder import Builder
 from kivymd.uix.button import MDRaisedButton
 from kivy.config import Config
+from kivymd.theming import ThemeManager
 
 from libs.screens.home import Home
 from libs.screens.desktop.searchscreen.searchscreen import MySearchFunctions
 from libs.functions.conversionsfuncs import ConversionsFuncs
+from libs.screens.desktop.playlistscreen.playlistscreen import MySearchPlaylist
 import requests
 import unicodedata
 from ffprobe import FFProbe
@@ -21,12 +24,15 @@ import re
 
 ffmpeg_path = r'.\libs\ffmpeg\bin\ffmpeg.exe'
 ffprobedir = r'.\libs\ffmpeg\bin\ffprobe.exe'
-versaoapp = "v0.3.0-alpha"
+versaoapp = "v0.4.0-alpha"
+
 
 Config.set('kivy', 'window_icon', 'icon.ico')
 Window.set_icon("icon.ico")
-videosob = []
-resolutionslist = []
+Window.minimum_height = 599
+Window.minimum_width = 799
+videosob: list[str] = []
+resolutionslist: list[str] = []
 pathsave = ""
 jachamado = False
 tamanhototal = 0
@@ -37,6 +43,7 @@ class DownTube(MDApp):
         super().__init__(**kwargs)
         self.searchclass = MySearchFunctions()
         self.converfuncsclass = ConversionsFuncs()
+        self.searchplaylist = MySearchPlaylist()
         self.home = Home()
         
         
@@ -70,6 +77,7 @@ class DownTube(MDApp):
             self.theme_cls.theme_style = "Dark"
             self.theme_cls.primary_palette = "BlueGray"
             self.theme_cls.accent_palette = "Teal"
+
         else:
             themedark = False
             self.theme_cls.theme_style = "Light"
@@ -79,7 +87,6 @@ class DownTube(MDApp):
         widgetsdownloadscreen = []
         for item in self.root.ids.hometab.children[0].ids:
             widgetsdownloadscreen.append(getattr(self.root.ids.hometab.children[0].ids, item))
-            print(item)
         imagevideo = widgetsdownloadscreen[5]
         titlevideo = widgetsdownloadscreen[7]
         sizevideo = widgetsdownloadscreen[8]
@@ -90,9 +97,12 @@ class DownTube(MDApp):
 
         try:
             if type(linkvideo) == str:
+                print('teste 1')
                 yt = YouTube(linkvideo)
             elif type(linkvideo) == YouTube:
-                yt = linkvideo  
+                print('teste 2')
+                yt = linkvideo 
+                
         except:
             return
         global progressbardown1
@@ -195,8 +205,6 @@ class DownTube(MDApp):
         
 
     def build(self, **kwargs):
-        Window.minimum_height = 599
-        Window.minimum_width = 799
         Window.icon = "icon.ico"
         Window.set_icon("icon.ico")
         self.theme_cls.theme_style = "Light"
