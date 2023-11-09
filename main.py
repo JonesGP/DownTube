@@ -18,9 +18,12 @@ from libs.functions.conversionsfuncs import ConversionsFuncs
 from libs.screens.desktop.playlistscreen.playlistscreen import MySearchPlaylist
 import requests
 import unicodedata
-from ffprobe import FFProbe
 import subprocess
 import re
+try: 
+    from ffprobe import FFProbe
+except:
+    pass
 
 ffmpeg_path = r'.\libs\ffmpeg\bin\ffmpeg.exe'
 ffprobedir = r'.\libs\ffmpeg\bin\ffprobe.exe'

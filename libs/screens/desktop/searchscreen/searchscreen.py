@@ -29,17 +29,17 @@ class MySearchFunctions:
         
     def createboxvideos(self, app, boxvideossearch, video, videoitems, numindex):
         global listvideoob
-        boxla = MDBoxLayout(orientation='horizontal', size_hint_y=None, size_hint_x=1, height=100, padding=5)
+        boxla = MDBoxLayout(orientation='horizontal', size_hint_y=None, size_hint_x=1, height=130, padding=5, spacing=5)
         if numindex != False:
-            boxla.add_widget(MDLabel(text=str(numindex), text_color=app.theme_cls.text_color, size_hint=(0.1, None), height=100))
-        boxla.add_widget(AsyncImage(source=videoitems[0], size_hint=(0.3, 1)))
+            boxla.add_widget(MDLabel(text=str(numindex), text_color=app.theme_cls.text_color, size_hint=(0.05, None), height=130))
+        boxla.add_widget(AsyncImage(source=videoitems[0], size_hint=(0.2, 1)))
                         
         boxinfo = MDBoxLayout(orientation='vertical', size_hint=(0.9, 1))
         boxinfo.add_widget(MDLabel(text=str(videoitems[1]), text_color=app.theme_cls.text_color, size_hint=(1, 0.4))) #titulo
             
         boxviewsage = MDBoxLayout(orientation='horizontal', size_hint=(1, 0.09))
-        boxviewsage.add_widget(MDLabel(text=f"{videoitems[2]} de vizualizações",font_size=20, text_color=app.theme_cls.text_color, size_hint=(0.5, 1))) #views
-        boxviewsage.add_widget(MDLabel(text=f"há {videoitems[3]}", text_color=app.theme_cls.text_color, size_hint=(0.5, 1))) #data
+        boxviewsage.add_widget(MDLabel(text=f"{videoitems[2]} de vizualizações", font_size='1sp', text_color=app.theme_cls.text_color, size_hint=(0.7, 1))) #views
+        boxviewsage.add_widget(MDLabel(text=f"há {videoitems[3]}",font_size='1sp', text_color=app.theme_cls.text_color, size_hint=(0.3, 1))) #data
         
         boxinfo.add_widget(boxviewsage)
         boxinfo.add_widget(MDLabel(text=str(videoitems[5]), text_color=app.theme_cls.text_color, size_hint=(1, 0.3))) #canal
@@ -65,7 +65,7 @@ class MySearchFunctions:
         boxvideossearch.clear_widgets()
         global listvideoob
         try:
-            if Playlist(searchtext):
+            if Playlist(searchtext) or searchtext in "https://":
                 print('entrou dentro de onde não deve entrar')
                 global listvideosplay
                 self.listvideosplay = []
@@ -75,6 +75,7 @@ class MySearchFunctions:
                 for index, video in enumerate(playlistvi.videos):
                     self.listvideosplay.append(video)
                     threading.Thread(target=self.pesquisarcomtheading, args=(app, video, boxvideossearch, index + 1)).start()
+                    print(index)
         except:
             sea = Search(searchtext)
             videosre = sea.results
