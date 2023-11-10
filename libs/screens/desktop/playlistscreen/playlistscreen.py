@@ -4,6 +4,7 @@ class PlayListScreen(MDScreen):
     pass
 
 class MySearchPlaylist:
+    # Função que pega as informações que o usuario digitou na tela com a quantidade de videos que ele quer baixar
     def download_playlist(self, app, opvideos):
         videosdown = []
         if '-' in opvideos:

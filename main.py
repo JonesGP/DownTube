@@ -9,6 +9,8 @@ from kivymd.app import MDApp
 from kivy.core.window import Window
 from kivy.lang.builder import Builder
 from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 from kivy.config import Config
 from kivymd.theming import ThemeManager
 
@@ -48,6 +50,7 @@ class DownTube(MDApp):
         self.converfuncsclass = ConversionsFuncs()
         self.searchplaylist = MySearchPlaylist()
         self.home = Home()
+        self.dialog = None
         
         
     def versao_atual(self):
@@ -207,6 +210,26 @@ class DownTube(MDApp):
             Path(caminhoarq).unlink()
         
 
+    def show_alert_dialog(self, error):
+        if not self.dialog:
+            self.dialog = MDDialog(
+                text="O link não é valido ou o servidor está indisponível",
+                buttons=[
+                    MDFlatButton(
+                        text="Cancelar",
+                        theme_text_color="Custom",
+                        text_color=self.theme_cls.primary_color,
+                        on_release=lambda x: self.dialog.dismiss()
+                    ),
+                    MDFlatButton(
+                        text="Pesquisar no youtube",
+                        theme_text_color="Custom",
+                        text_color=self.theme_cls.primary_color,
+                        on_release=lambda x: self.dialog.dismiss()
+                    ),
+                ],
+            )
+        self.dialog.open()
     def build(self, **kwargs):
         Window.icon = "icon.ico"
         Window.set_icon("icon.ico")
