@@ -30,14 +30,15 @@ class MySearchFunctions:
         # Função que cria os botões na tela
     def createboxvideos(self, app, boxvideossearch, video, videoitems, numindex):
         global listvideoob
-        boxla = MDBoxLayout(orientation='horizontal', size_hint_y=None, size_hint_x=1, height=130, padding=5, spacing=5)
+        boxla = MDBoxLayout(id='boxvideouni', orientation='horizontal', size_hint_y=None, size_hint_x=1, height=130, padding=5, spacing=5)
+        print(app.get_running_app().root.ids.hometab.children[0].ids)
         if numindex != False:
             boxla.add_widget(MDLabel(text=str(numindex), text_color=app.theme_cls.text_color, size_hint=(0.05, None), height=130))
         boxla.add_widget(AsyncImage(source=videoitems[0], size_hint=(0.2, 1)))
-                        
+        
         boxinfo = MDBoxLayout(orientation='vertical', size_hint=(0.9, 1))
         boxinfo.add_widget(MDLabel(text=str(videoitems[1]), text_color=app.theme_cls.text_color, size_hint=(1, 0.4))) #titulo
-            
+        
         boxviewsage = MDBoxLayout(orientation='horizontal', size_hint=(1, 0.09))
         boxviewsage.add_widget(MDLabel(text=f"{videoitems[2]} de vizualizações", font_size='1sp', text_color=app.theme_cls.text_color, size_hint=(0.7, 1))) #views
         boxviewsage.add_widget(MDLabel(text=f"há {videoitems[3]}",font_size='1sp', text_color=app.theme_cls.text_color, size_hint=(0.3, 1))) #data

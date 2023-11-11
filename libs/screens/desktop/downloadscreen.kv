@@ -96,6 +96,11 @@
                                 size_hint: (1, 1)
                                 pos_hint: {'center_x': .5 , 'center_y': .5}
                                 spacing:10
+                            MDDropDownItem:
+                                id: dropresolutions
+                                pos_hint: {'center_x': .5, 'center_y': .5}
+                                text: 'resolução'
+                                on_release: app.menu.open()
                 MDBoxLayout:
                     orientation: 'vertical'
                     size_hint: (1, .25)

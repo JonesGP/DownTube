@@ -13,6 +13,7 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivy.config import Config
 from kivymd.theming import ThemeManager
+from kivymd.uix.menu import MDDropdownMenu
 
 from libs.screens.home import Home
 from libs.screens.desktop.searchscreen.searchscreen import MySearchFunctions
@@ -43,6 +44,7 @@ jachamado = False
 tamanhototal = 0
 progressbardown1 = None
 themedark = False
+
 class DownTube(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -51,11 +53,12 @@ class DownTube(MDApp):
         self.searchplaylist = MySearchPlaylist()
         self.home = Home()
         self.dialog = None
-        
+        self.menu = None
         
     def versao_atual(self):
         global versaoapp
         return f"Versão app: {versaoapp}"
+    
     def pegar_ultima_versao(self):
         global versaoapp
         try:
@@ -76,6 +79,7 @@ class DownTube(MDApp):
         except:
             return f"Não foi possível obter a última versão"
         return f"Versão atual: {versaoapp}"
+    
     def theme_button(self):
         global themedark
         if not themedark:
@@ -89,6 +93,7 @@ class DownTube(MDApp):
             self.theme_cls.theme_style = "Light"
             self.theme_cls.primary_palette = "LightBlue"
             self.theme_cls.accent_palette = "Teal"
+    
     def confirm_link(self, linkvideo):
         widgetsdownloadscreen = []
         for item in self.root.ids.hometab.children[0].ids:
@@ -110,6 +115,7 @@ class DownTube(MDApp):
                 yt = linkvideo 
                 
         except:
+            self.show_alert_dialog('')
             return
         global progressbardown1
         yt.register_on_progress_callback(self.on_progress)
@@ -122,14 +128,35 @@ class DownTube(MDApp):
         formated_time = self.converfuncsclass.formtimeseg(yt.length)
         sizevideo.text = f"Tempo: {str(formated_time)}"
         boxdownloads.clear_widgets()
-        for video in yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution'):
-            videosob.append(video)
-            resolutionslist.append(video.resolution)
-            buttonraised = MDRaisedButton(text=f"{video.resolution} {str(int(video.filesize_mb))}MB", on_release=self.create_button_callback(video, pathsave))
-            boxdownloads.add_widget(buttonraised)
-        #Botão Audio yt.streams.filter(only_audio=True).order_by('abr').last().subtype
-        boxdownloads.add_widget(MDRaisedButton(text=f"MP3 {str(int(yt.streams.filter(only_audio=True).order_by('abr').last().filesize_mb))}MB", on_release=self.create_button_callback(yt.streams.filter(only_audio=True).order_by('abr').last(), pathsave)))
-     
+        try:
+            for vi in yt.streams:
+                print(vi)
+            menu_items = []
+            for video in yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution'):
+                videosob.append(video)
+                resolutionslist.append(video.resolution)
+                menu_items.append(
+                    {
+                        "text": f"ABC",
+                        "on_release": lambda x=f"{video}": self.set_item(x),# self.create_button_callback(video, pathsave)
+                    }
+                )
+                buttonraised = MDRaisedButton(text=f"{video.resolution} {str(int(video.filesize_mb))}MB", on_release=self.create_button_callback(video, pathsave))
+                boxdownloads.add_widget(buttonraised)
+            #Botão Audio yt.streams.filter(only_audio=True).order_by('abr').last().subtype
+            boxdownloads.add_widget(MDRaisedButton(text=f"MP3 {str(int(yt.streams.filter(only_audio=True).order_by('abr').last().filesize_mb))}MB", on_release=self.create_button_callback(yt.streams.filter(only_audio=True).order_by('abr').last(), pathsave)))
+            print(menu_items)
+            self.menu = MDDropdownMenu(
+                caller=self.root.ids.hometab.children[0].ids.dropresolutions,
+                items=menu_items,
+                position="center",
+            )
+            self.menu.bind()
+        except Exception as error:
+            self.show_alert_dialog('')
+            print(error)
+            return
+        
     def conver_audio(self, audio_file,output_file, output_format):
         def monitorar_progresso(comando):
             processo = subprocess.Popen(comando, shell=False, creationflags=subprocess.CREATE_NO_WINDOW, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
@@ -168,6 +195,7 @@ class DownTube(MDApp):
                 print("Ocorreu um erro durante a conversão.")
         command = [ffmpeg_path, '-i', audio_file, '-ab', '128k', '-ac', '2', '-ar', '44100', '-y', output_file]
         monitorar_progresso(command)
+    
     def create_button_callback(self, video, pathsave):
         return lambda x: self.downloadvideo(video, pathsave)
 
@@ -190,7 +218,6 @@ class DownTube(MDApp):
 
     def downloadvideo(self, video, pathsave):
         threading.Thread(target=self.funçao_download, args=(video, pathsave)).start()
-
         print(video)
 
     def funçao_download(self, video, pathsave):
@@ -208,8 +235,12 @@ class DownTube(MDApp):
             caminhoarq = f"{video.download(pathsave)}"
             self.conver_audio(caminhoarq, caminhoarq.replace(".webm", ".mp3"), 'mp3')
             Path(caminhoarq).unlink()
-        
-
+    
+    def set_item(self, text_item):
+        dropobj = self.root.ids.hometab.children[0].ids.dropresolutions#getattr(self.root.ids.hometab.children[0].ids, 'dropresolutions')
+        print(dropobj)
+        dropobj.set_item(text_item)
+        self.menu.dismiss()
     def show_alert_dialog(self, error):
         if not self.dialog:
             self.dialog = MDDialog(
@@ -230,6 +261,7 @@ class DownTube(MDApp):
                 ],
             )
         self.dialog.open()
+    
     def build(self, **kwargs):
         Window.icon = "icon.ico"
         Window.set_icon("icon.ico")
