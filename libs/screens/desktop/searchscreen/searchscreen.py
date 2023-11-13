@@ -91,6 +91,5 @@ class MySearchFunctions:
     def appatual(self, app, videoid):
         app.get_running_app().root.switch_tab("home")
         linkvideo = f"https://www.youtube.com/watch?v={videoid}"
-        print(linkvideo)
         app.get_running_app().confirm_link(linkvideo)
         

@@ -1,3 +1,4 @@
+#Classes responsaveis pela tela de pesquisa
 from kivymd.uix.screen import MDScreen
 from pytube import YouTube
 class PlayListScreen(MDScreen):
@@ -12,6 +13,7 @@ class MySearchPlaylist:
             for opvideo in opvideos:
                 print(app.searchclass.listvideosplay[int(opvideo)-1])
                 videosdown.append(app.searchclass.listvideosplay[int(opvideo)-1])
+                
         elif ',' in opvideos:
             opvideos = opvideos.split(",")
             stativideo = int(opvideos[0])
@@ -19,6 +21,13 @@ class MySearchPlaylist:
             for video in range(stativideo, endvideo + 1):
                 print(app.searchclass.listvideosplay[int(video)-1])
                 videosdown.append(app.searchclass.listvideosplay[int(video)-1])
+                
+        # Função para baixar todos os videos
+        elif 'tudo todos' in opvideos:
+            for video in app.searchclass.listvideosplay:
+                videosdown.append(video)
+                
+        # Função para pega a lista videosdown e chama a função de download para cada video
         for video in videosdown:
             video.register_on_progress_callback(app.on_progress)
             videostream = video.streams.get_highest_resolution()

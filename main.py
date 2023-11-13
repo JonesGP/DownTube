@@ -14,6 +14,7 @@ from kivymd.uix.dialog import MDDialog
 from kivy.config import Config
 from kivymd.theming import ThemeManager
 from kivymd.uix.menu import MDDropdownMenu
+from kivy.metrics import dp
 
 from libs.screens.home import Home
 from libs.screens.desktop.searchscreen.searchscreen import MySearchFunctions
@@ -54,7 +55,6 @@ class DownTube(MDApp):
         self.home = Home()
         self.dialog = None
         self.menu = None
-        
     def versao_atual(self):
         global versaoapp
         return f"Versão app: {versaoapp}"
@@ -138,7 +138,7 @@ class DownTube(MDApp):
                 menu_items.append(
                     {
                         "text": f"ABC",
-                        "on_release": lambda x=f"{video}": self.set_item(x),# self.create_button_callback(video, pathsave)
+                        "on_release": lambda x=f"{video.resolution}": self.set_item(x),#
                     }
                 )
                 buttonraised = MDRaisedButton(text=f"{video.resolution} {str(int(video.filesize_mb))}MB", on_release=self.create_button_callback(video, pathsave))
@@ -146,6 +146,7 @@ class DownTube(MDApp):
             #Botão Audio yt.streams.filter(only_audio=True).order_by('abr').last().subtype
             boxdownloads.add_widget(MDRaisedButton(text=f"MP3 {str(int(yt.streams.filter(only_audio=True).order_by('abr').last().filesize_mb))}MB", on_release=self.create_button_callback(yt.streams.filter(only_audio=True).order_by('abr').last(), pathsave)))
             print(menu_items)
+            print(self.root.ids.hometab.children[0].ids.dropresolutions)
             self.menu = MDDropdownMenu(
                 caller=self.root.ids.hometab.children[0].ids.dropresolutions,
                 items=menu_items,
@@ -237,10 +238,12 @@ class DownTube(MDApp):
             Path(caminhoarq).unlink()
     
     def set_item(self, text_item):
-        dropobj = self.root.ids.hometab.children[0].ids.dropresolutions#getattr(self.root.ids.hometab.children[0].ids, 'dropresolutions')
+        print('função set_item', text_item)
+        dropobj = self.root.ids.hometab.children[0].ids.dropresolutions
         print(dropobj)
         dropobj.set_item(text_item)
         self.menu.dismiss()
+        
     def show_alert_dialog(self, error):
         if not self.dialog:
             self.dialog = MDDialog(
