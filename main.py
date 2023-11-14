@@ -54,7 +54,6 @@ class DownTube(MDApp):
         self.searchplaylist = MySearchPlaylist()
         self.home = Home()
         self.dialog = None
-        self.menu = None
     def versao_atual(self):
         global versaoapp
         return f"Versão app: {versaoapp}"
@@ -120,7 +119,6 @@ class DownTube(MDApp):
         global progressbardown1
         yt.register_on_progress_callback(self.on_progress)
         progressbardown1 = progressbardown
-        pathsave = pathsave
         imagevideo.source = yt.thumbnail_url
         titlevideo.text = f"Titulo: {yt.title}"
         chanelvideo.text = f"Canal: {yt.author}"
@@ -131,31 +129,18 @@ class DownTube(MDApp):
         try:
             for vi in yt.streams:
                 print(vi)
-            menu_items = []
             for video in yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution'):
                 videosob.append(video)
                 resolutionslist.append(video.resolution)
-                menu_items.append(
-                    {
-                        "text": f"ABC",
-                        "on_release": lambda x=f"{video.resolution}": self.set_item(x),#
-                    }
-                )
-                buttonraised = MDRaisedButton(text=f"{video.resolution} {str(int(video.filesize_mb))}MB", on_release=self.create_button_callback(video, pathsave))
+                buttonraised = MDRaisedButton(text=f"{video.resolution} {str(int(video.filesize_mb))}MB", on_release=self.create_button_callback(video, pathsave, None))
+                boxdownloads.add_widget(buttonraised)
+            for video in yt.streams.filter(res='1080p', file_extension='webm'):
+                buttonraised = MDRaisedButton(text=f"{video.resolution} {str(int(video.filesize_mb))}MB", on_release=self.create_button_callback(video, pathsave, yt.streams.filter(only_audio=True).order_by('abr').last()))
                 boxdownloads.add_widget(buttonraised)
             #Botão Audio yt.streams.filter(only_audio=True).order_by('abr').last().subtype
-            boxdownloads.add_widget(MDRaisedButton(text=f"MP3 {str(int(yt.streams.filter(only_audio=True).order_by('abr').last().filesize_mb))}MB", on_release=self.create_button_callback(yt.streams.filter(only_audio=True).order_by('abr').last(), pathsave)))
-            print(menu_items)
-            print(self.root.ids.hometab.children[0].ids.dropresolutions)
-            self.menu = MDDropdownMenu(
-                caller=self.root.ids.hometab.children[0].ids.dropresolutions,
-                items=menu_items,
-                position="center",
-            )
-            self.menu.bind()
+            boxdownloads.add_widget(MDRaisedButton(text=f"MP3 {str(int(yt.streams.filter(only_audio=True).order_by('abr').last().filesize_mb))}MB", on_release=self.create_button_callback(yt.streams.filter(only_audio=True).order_by('abr').last(), pathsave, None)))
         except Exception as error:
             self.show_alert_dialog('')
-            print(error)
             return
         
     def conver_audio(self, audio_file,output_file, output_format):
@@ -197,8 +182,47 @@ class DownTube(MDApp):
         command = [ffmpeg_path, '-i', audio_file, '-ab', '128k', '-ac', '2', '-ar', '44100', '-y', output_file]
         monitorar_progresso(command)
     
-    def create_button_callback(self, video, pathsave):
-        return lambda x: self.downloadvideo(video, pathsave)
+    def join_video_audio(self, video_file, audio_file, output_file):
+        def monitorar_progresso(comando):
+            processo = subprocess.Popen(comando, shell=False, creationflags=subprocess.CREATE_NO_WINDOW, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
+
+            duracao_total = None
+
+            # Regex para extrair a duração total do stderr do FFmpeg
+            regex_duracao = r"Duration: (\d{2}):(\d{2}):(\d{2})"
+
+            while True:
+                output = processo.stderr.readline().strip()
+
+                if output:
+                    duracao_match = re.search(regex_duracao, output)
+                    if duracao_match:
+                        duracao_total = int(duracao_match.group(1))*3600 + int(duracao_match.group(2))*60 + int(duracao_match.group(3))
+
+                    tempo_match = re.search(r"time=(\d{2}):(\d{2}):(\d{2})", output)
+                    if tempo_match and duracao_total:
+                        tempo_atual = int(tempo_match.group(1))*3600 + int(tempo_match.group(2))*60 + int(tempo_match.group(3))
+                        progresso = (tempo_atual / duracao_total) * 100
+                        print(f"Progresso da junção: {progresso:.2f}%")
+                        progressbarconv = getattr(self.root.ids.hometab.children[0].ids, "progressbardown")
+                        statusok = getattr(self.root.ids.hometab.children[0].ids, "statusok")
+                        statusok.text = f"Juntando {progresso:.0f}%"
+                        progressbarconv.value = progresso
+
+                if processo.poll() is not None:
+                    statusok.text = "Junção concluída!"
+                    break
+
+            if processo.returncode == 0:
+                print("Junção concluída com sucesso!")
+            else:
+                print("Ocorreu um erro durante a junção.")
+
+        command = [ffmpeg_path, '-i', video_file, '-i', audio_file, '-c', 'copy', '-y', output_file]
+        monitorar_progresso(command)
+
+    def create_button_callback(self, video, pathsave, audio):
+        return lambda x: self.downloadvideo(video, pathsave, audio)
 
     def on_progress(self, chunk: bytes, file_handler: BinaryIO, bytes_remaining: int):
         self.progress_bar_download(bytes_remaining)
@@ -217,11 +241,11 @@ class DownTube(MDApp):
         except:
             pass
 
-    def downloadvideo(self, video, pathsave):
-        threading.Thread(target=self.funçao_download, args=(video, pathsave)).start()
+    def downloadvideo(self, video, pathsave, audio):
+        threading.Thread(target=self.funçao_download, args=(video, pathsave, audio)).start()
         print(video)
 
-    def funçao_download(self, video, pathsave):
+    def funçao_download(self, video, pathsave, audio):
         global jachamado
         global tamanhototal
         jachamado = False
@@ -230,20 +254,39 @@ class DownTube(MDApp):
             pathsave = Path.home() / "Downloads"
         statusok = getattr(self.root.ids.hometab.children[0].ids, 'statusok')
         statusok.text = 'Baixando...'
+        print(video)
         video.download(pathsave)
+        if audio != None:
+            def editar_nome_arquivo(caminho_arquivo, novo_nome):
+                # Cria um objeto Path a partir do caminho do arquivo
+                path_arquivo = Path(caminho_arquivo)
+
+                # Obtém o diretório e o nome do arquivo atual
+                diretorio = path_arquivo.parent
+                nome_arquivo = path_arquivo.name
+
+                # Concatena o novo nome do arquivo com o diretório
+                novo_caminho_arquivo = diretorio / novo_nome
+
+                # Renomeia o arquivo
+                path_arquivo.rename(novo_caminho_arquivo)
+            editar_nome_arquivo(f'{pathsave}\{video.default_filename}', f'video{video.default_filename}')
+            audio.download(pathsave)
+            print(pathsave)
+            
+            video_file = f'{pathsave}\video{video.default_filename}'
+            audio_file = f'{pathsave}\{audio.default_filename}'
+            output_file = f'{pathsave}\{video.default_filename.replace(".webm", ".mp4")}'
+            print(video_file, audio_file, output_file)
+
+            self.join_video_audio(video_file, audio_file, output_file)
+        
         statusok.text = 'Baixado!'
         if video.type == "audio":
             caminhoarq = f"{video.download(pathsave)}"
             self.conver_audio(caminhoarq, caminhoarq.replace(".webm", ".mp3"), 'mp3')
             Path(caminhoarq).unlink()
     
-    def set_item(self, text_item):
-        print('função set_item', text_item)
-        dropobj = self.root.ids.hometab.children[0].ids.dropresolutions
-        print(dropobj)
-        dropobj.set_item(text_item)
-        self.menu.dismiss()
-        
     def show_alert_dialog(self, error):
         if not self.dialog:
             self.dialog = MDDialog(
