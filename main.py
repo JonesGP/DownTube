@@ -16,6 +16,7 @@ from kivymd.theming import ThemeManager
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.metrics import dp
 
+
 from libs.screens.home import Home
 from libs.screens.desktop.searchscreen.searchscreen import MySearchFunctions
 from libs.functions.conversionsfuncs import ConversionsFuncs
@@ -24,10 +25,11 @@ import requests
 import unicodedata
 import subprocess
 import re
-try: 
-    from ffprobe import FFProbe
-except:
-    pass
+import os
+import time
+
+global MODODESENVOLVIMENTO
+MODODESENVOLVIMENTO = True
 
 ffmpeg_path = r'.\libs\ffmpeg\bin\ffmpeg.exe'
 ffprobedir = r'.\libs\ffmpeg\bin\ffprobe.exe'
@@ -60,6 +62,9 @@ class DownTube(MDApp):
     
     def pegar_ultima_versao(self):
         global versaoapp
+        if MODODESENVOLVIMENTO:
+            return f"Versão atual: {versaoapp}"
+        textvergit = None
         try:
             user_name = "jonesgp"
             repor_name = "downtube"
@@ -183,43 +188,8 @@ class DownTube(MDApp):
         monitorar_progresso(command)
     
     def join_video_audio(self, video_file, audio_file, output_file):
-        def monitorar_progresso(comando):
-            processo = subprocess.Popen(comando, shell=False, creationflags=subprocess.CREATE_NO_WINDOW, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
-
-            duracao_total = None
-
-            # Regex para extrair a duração total do stderr do FFmpeg
-            regex_duracao = r"Duration: (\d{2}):(\d{2}):(\d{2})"
-
-            while True:
-                output = processo.stderr.readline().strip()
-
-                if output:
-                    duracao_match = re.search(regex_duracao, output)
-                    if duracao_match:
-                        duracao_total = int(duracao_match.group(1))*3600 + int(duracao_match.group(2))*60 + int(duracao_match.group(3))
-
-                    tempo_match = re.search(r"time=(\d{2}):(\d{2}):(\d{2})", output)
-                    if tempo_match and duracao_total:
-                        tempo_atual = int(tempo_match.group(1))*3600 + int(tempo_match.group(2))*60 + int(tempo_match.group(3))
-                        progresso = (tempo_atual / duracao_total) * 100
-                        print(f"Progresso da junção: {progresso:.2f}%")
-                        progressbarconv = getattr(self.root.ids.hometab.children[0].ids, "progressbardown")
-                        statusok = getattr(self.root.ids.hometab.children[0].ids, "statusok")
-                        statusok.text = f"Juntando {progresso:.0f}%"
-                        progressbarconv.value = progresso
-
-                if processo.poll() is not None:
-                    statusok.text = "Junção concluída!"
-                    break
-
-            if processo.returncode == 0:
-                print("Junção concluída com sucesso!")
-            else:
-                print("Ocorreu um erro durante a junção.")
-
-        command = [ffmpeg_path, '-i', video_file, '-i', audio_file, '-c', 'copy', '-y', output_file]
-        monitorar_progresso(command)
+        command = f'{ffmpeg_path} -i "{video_file}" -i "{audio_file}" -c copy "{output_file}"'
+        os.system(command)
 
     def create_button_callback(self, video, pathsave, audio):
         return lambda x: self.downloadvideo(video, pathsave, audio)
@@ -242,8 +212,11 @@ class DownTube(MDApp):
             pass
 
     def downloadvideo(self, video, pathsave, audio):
-        threading.Thread(target=self.funçao_download, args=(video, pathsave, audio)).start()
-        print(video)
+        downthread = threading.Thread(target=self.funçao_download, args=(video, pathsave, audio))
+        downthread.start()
+        while downthread.is_alive():
+            time.sleep(1)
+        return 'baixei'
 
     def funçao_download(self, video, pathsave, audio):
         global jachamado
@@ -274,18 +247,21 @@ class DownTube(MDApp):
             audio.download(pathsave)
             print(pathsave)
             
-            video_file = f'{pathsave}\video{video.default_filename}'
+            video_file = f'{pathsave}\\video{video.default_filename}'
             audio_file = f'{pathsave}\{audio.default_filename}'
             output_file = f'{pathsave}\{video.default_filename.replace(".webm", ".mp4")}'
-            print(video_file, audio_file, output_file)
-
+            # Comando FFmpeg para juntar o áudio e o vídeo
+            statusok.text = 'Convertendo...'
             self.join_video_audio(video_file, audio_file, output_file)
-        
+            os.remove(video_file)
+            os.remove(audio_file)
+            
         statusok.text = 'Baixado!'
         if video.type == "audio":
             caminhoarq = f"{video.download(pathsave)}"
             self.conver_audio(caminhoarq, caminhoarq.replace(".webm", ".mp3"), 'mp3')
             Path(caminhoarq).unlink()
+        return 'Registrado'
     
     def show_alert_dialog(self, error):
         if not self.dialog:
