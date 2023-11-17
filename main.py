@@ -47,6 +47,7 @@ jachamado = False
 tamanhototal = 0
 progressbardown1 = None
 themedark = False
+downmultiplay = False #variavel que define se vai ser download de um video ou de uma playlist
 
 class DownTube(MDApp):
     def __init__(self, **kwargs):
@@ -56,6 +57,7 @@ class DownTube(MDApp):
         self.searchplaylist = MySearchPlaylist()
         self.home = Home()
         self.dialog = None
+        self.downmultiplay = False
     def versao_atual(self):
         global versaoapp
         return f"Versão app: {versaoapp}"
@@ -99,6 +101,7 @@ class DownTube(MDApp):
             self.theme_cls.accent_palette = "Teal"
     
     def confirm_link(self, linkvideo):
+        global progressbardown1
         widgetsdownloadscreen = []
         for item in self.root.ids.hometab.children[0].ids:
             widgetsdownloadscreen.append(getattr(self.root.ids.hometab.children[0].ids, item))
@@ -121,7 +124,6 @@ class DownTube(MDApp):
         except:
             self.show_alert_dialog('')
             return
-        global progressbardown1
         yt.register_on_progress_callback(self.on_progress)
         progressbardown1 = progressbardown
         imagevideo.source = yt.thumbnail_url
@@ -202,6 +204,17 @@ class DownTube(MDApp):
         global tamanhototal
         global progressbardown1
         porcentagem = 0
+        if self.downmultiplay:
+            progressbarplaylist = self.get_running_app().root.ids.playlistscreentab.children[0].ids.progressbarplaylist
+            if not jachamado:
+                tamanhototal = bytes_remaining
+                jachamado = True
+            try:
+                porcentagem = 100 - (bytes_remaining / tamanhototal) * 100
+                progressbarplaylist.value = porcentagem
+            except:
+                pass
+            return
         if not jachamado:
             tamanhototal = bytes_remaining
             jachamado = True

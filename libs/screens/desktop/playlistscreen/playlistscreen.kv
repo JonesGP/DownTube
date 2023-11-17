@@ -24,7 +24,7 @@
             spacing: '10dp'
             MDBoxLayout:
                 orientation: 'vertical'
-                size_hint: (0.6, 1)
+                size_hint: (0.7, 1)
                 height: self.minimum_height
                 padding: 10
                 radius: [20,20,20,20]
@@ -41,7 +41,7 @@
             MDBoxLayout:
                 id: boxplaylistinfocontent
                 orientation: 'vertical'
-                size_hint: (0.4, 1)
+                size_hint: (0.3, 1)
                 spacing: '10dp'
                 MDBoxLayout:
                     id: boxplaylistinfoplay
@@ -61,6 +61,14 @@
                     size_hint: (1, 0.5)
                     padding: 10
                     radius: [20,20,20,20]
+                    MDBoxLayout:
+                        MDLabel:
+                            text: 'Criar pasta? '
+                        MDCheckbox:
+                            size_hint: None, None
+                            size: "48dp", "48dp"
+                            pos_hint: {'center_x': .5, 'center_y': .5}
+                            on_active: app.searchplaylist.check_folder(app, *args)
                     MDProgressBar:
                         id: progressbarplaylist
                         value: 0
@@ -74,14 +82,15 @@
                         MDLabel:
                             id: completeplaylist
                             text: 'Progresso: '
+                            size_hint: (0.4, 1)
                         MDLabel:
                             id: quantdown
                             text: '0/0'
+                            size_hint: (0.6, 1)
 
-                    
                     MDTextField:
                         id: fieldplaylisdopdown
-                        hint_text: 'EX: 1-2 2-3-6-8'
+                        hint_text: 'EX: 3-7 1,3,9'
                     MDRaisedButton:
                         text: 'Baixar'
                         on_release: app.searchplaylist.download_playlist(app, fieldplaylisdopdown.text)
