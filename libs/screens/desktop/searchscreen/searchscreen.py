@@ -74,6 +74,7 @@ class MySearchFunctions:
                 global listvideosplay
                 self.listvideosplay = []
                 playlistvi = Playlist(searchtext)
+                app.playlistvi = playlistvi
                 app.get_running_app().root.ids.playlistscreentab.children[0].ids.nameplaylist.text = f'Nome da Playlist: {playlistvi.title}'
                 app.get_running_app().root.ids.playlistscreentab.children[0].ids.lengthplaylist.text = f"Quantidade de videos: {playlistvi.length}"
                 for index, video in enumerate(playlistvi.videos):

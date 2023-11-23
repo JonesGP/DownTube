@@ -42,12 +42,13 @@ Window.minimum_height = 599
 Window.minimum_width = 799
 videosob: list[str] = []
 resolutionslist: list[str] = []
-pathsave = ""
+pathsave = Path.home() / "Downloads"
 jachamado = False
 tamanhototal = 0
 progressbardown1 = None
 themedark = False
 downmultiplay = False #variavel que define se vai ser download de um video ou de uma playlist
+createfolder = False #variavel que define se vai ser criado uma pasta com da playlist
 
 class DownTube(MDApp):
     def __init__(self, **kwargs):
@@ -57,7 +58,10 @@ class DownTube(MDApp):
         self.searchplaylist = MySearchPlaylist()
         self.home = Home()
         self.dialog = None
-        self.downmultiplay = False
+        self.downmultiplay = downmultiplay
+        self.createfolder = createfolder
+        self.playlistvi = None
+        self.pathsave = pathsave
     def versao_atual(self):
         global versaoapp
         return f"Versão app: {versaoapp}"
