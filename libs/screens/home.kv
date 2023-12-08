@@ -1,6 +1,7 @@
 #:include "libs/screens/desktop/downloadscreen.kv"
 #:include "libs/screens/desktop/searchscreen/searchscreen.kv"
 #:include "libs/screens/desktop/playlistscreen/playlistscreen.kv"
+#:include "libs/screens/desktop/convertscreen/convertscreen.kv"
 
 MDBottomNavigation:
     id: bottom_navigation
@@ -10,7 +11,7 @@ MDBottomNavigation:
     MDBottomNavigationItem:
         id: hometab
         name: 'home'
-        icon: 'home'
+        icon: 'tray-arrow-down'
         text: 'Download'
         DownloadScreen:
             id: aidentro
@@ -26,4 +27,9 @@ MDBottomNavigation:
         icon: 'playlist-play'
         text: 'PlayList'
         PlayListScreen:
-
+    MDBottomNavigationItem:
+        id: convertscreentab
+        name: 'convertscreen'
+        icon: 'arrow-u-left-bottom-bold'
+        text: 'Conversão'
+        ConvertScreen:

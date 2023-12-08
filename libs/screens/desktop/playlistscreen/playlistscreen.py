@@ -14,11 +14,18 @@ class MySearchPlaylist:
     def downallvideosplay(self, app, videosdown):
         quantdown =  app.get_running_app().root.ids.playlistscreentab.children[0].ids.quantdown
         app.downmultiplay = True
+        
         if app.createfolder:
-            app.pathsave
-            folder_play = Path(app.pathsave, app.playlistvi.title)
-            folder_play.mkdir(parents=True, exist_ok=True)
-            folder_playlist_path = folder_play.resolve()
+            if app.get_running_app().root.ids.playlistscreentab.children[0].ids.namefolderuserplaylist.text != '':
+                folder_play = Path(app.pathsave, app.get_running_app().root.ids.playlistscreentab.children[0].ids.namefolderuserplaylist.text)
+                folder_play.mkdir(parents=True, exist_ok=True)
+                folder_playlist_path = folder_play.resolve()
+            else:
+                folder_play = Path(app.pathsave, app.playlistvi.title)
+                folder_play.mkdir(parents=True, exist_ok=True)
+                folder_playlist_path = folder_play.resolve()
+
+            app.pathsave = folder_playlist_path
             print(folder_playlist_path)
         else:
             folder_playlist_path = ''
@@ -31,6 +38,7 @@ class MySearchPlaylist:
             quantdown.text = f'{number+1}/{len(videosdown)}'
         print('sai do downallvideosplay')
         app.downmultiplay = False
+        app.pathsave = app.pathsavedefault
     # Função que pega as informações que o usuario digitou na tela com a quantidade de videos que ele quer baixar
     def download_playlist(self, app, opvideos):
         videosdown = []
@@ -41,14 +49,14 @@ class MySearchPlaylist:
     
         elif ',' in opvideos:
             opvideos = opvideos.split(",")
-            stativideo = int(opvideos[0])
-            endvideo = int(opvideos[1])
-            for video in range(stativideo, endvideo + 1):
+            for video in opvideos:
                 videosdown.append(app.searchclass.listvideosplay[int(video)-1])
                 
         # Função para baixar todos os videos
         elif 'tudo todos' in opvideos:
             for video in app.searchclass.listvideosplay:
                 videosdown.append(video)
+        else:
+            videosdown.append(app.searchclass.listvideosplay[int(opvideos)-1])
         threading.Thread(target=self.downallvideosplay, args=(app, videosdown)).start()
         # Função para pega a lista videosdown e chama a função de download para cada video

@@ -33,7 +33,7 @@ MODODESENVOLVIMENTO = True
 
 ffmpeg_path = r'.\libs\ffmpeg\bin\ffmpeg.exe'
 ffprobedir = r'.\libs\ffmpeg\bin\ffprobe.exe'
-versaoapp = "v0.4.0-alpha"
+versaoapp = "v0.4.1-alpha"
 
 
 Config.set('kivy', 'window_icon', 'icon.ico')
@@ -42,6 +42,7 @@ Window.minimum_height = 599
 Window.minimum_width = 799
 videosob: list[str] = []
 resolutionslist: list[str] = []
+pathsavedefault = Path.home() / "Downloads"
 pathsave = Path.home() / "Downloads"
 jachamado = False
 tamanhototal = 0
@@ -62,6 +63,7 @@ class DownTube(MDApp):
         self.createfolder = createfolder
         self.playlistvi = None
         self.pathsave = pathsave
+        self.pathsavedefault = pathsavedefault
     def versao_atual(self):
         global versaoapp
         return f"Versão app: {versaoapp}"

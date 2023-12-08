@@ -46,7 +46,7 @@
                 MDBoxLayout:
                     id: boxplaylistinfoplay
                     orientation: 'vertical'
-                    size_hint: (1, 0.5)
+                    size_hint: (1, 0.2)
                     padding: 10
                     radius: [20,20,20,20]
                     MDLabel:
@@ -62,13 +62,22 @@
                     padding: 10
                     radius: [20,20,20,20]
                     MDBoxLayout:
+                        size_hint: (1, 0.5)
+                        orientation: 'vertical'
+                        MDBoxLayout:
+                            MDLabel:
+                                text: 'Criar pasta? '
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .5, 'center_y': .5}
+                                on_active: app.searchplaylist.check_folder(app, *args)
                         MDLabel:
-                            text: 'Criar pasta? '
-                        MDCheckbox:
-                            size_hint: None, None
-                            size: "48dp", "48dp"
-                            pos_hint: {'center_x': .5, 'center_y': .5}
-                            on_active: app.searchplaylist.check_folder(app, *args)
+                            text:'Nome para a pasta:'
+                        MDTextField:
+                            id: namefolderuserplaylist
+                            hint_text: 'Deixe limpo para nome automático'
+
                     MDProgressBar:
                         id: progressbarplaylist
                         value: 0
@@ -90,7 +99,7 @@
 
                     MDTextField:
                         id: fieldplaylisdopdown
-                        hint_text: 'EX: 3-7 1,3,9'
+                        hint_text: 'EX: 3-7 1,3,9 tudo todos'
                     MDRaisedButton:
                         text: 'Baixar'
                         on_release: app.searchplaylist.download_playlist(app, fieldplaylisdopdown.text)
