@@ -1,0 +1,1 @@
+#adicionar opção no menu playlist para personalizar o nome da pasta
