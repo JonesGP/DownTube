@@ -31,7 +31,6 @@ class MySearchFunctions:
     def createboxvideos(self, app, boxvideossearch, video, videoitems, numindex):
         global listvideoob
         boxla = MDBoxLayout(id='boxvideouni', orientation='horizontal', size_hint_y=None, size_hint_x=1, height=130, padding=5, spacing=5)
-        print(app.get_running_app().root.ids.hometab.children[0].ids)
         if numindex != False:
             boxla.add_widget(MDLabel(text=str(numindex), text_color=app.theme_cls.text_color, size_hint=(0.05, None), height=130))
         boxla.add_widget(AsyncImage(source=videoitems[0], size_hint=(0.2, 1)))

@@ -21,7 +21,7 @@
             id: boxplaylistcontentitems
             orientation: 'horizontal'
             size_hint: (1, 0.9)
-            spacing: '10dp'
+            spacing: '0dp'
             MDBoxLayout:
                 orientation: 'vertical'
                 size_hint: (0.7, 1)
@@ -42,7 +42,7 @@
                 id: boxplaylistinfocontent
                 orientation: 'vertical'
                 size_hint: (0.3, 1)
-                spacing: '10dp'
+                spacing: '0dp'
                 MDBoxLayout:
                     id: boxplaylistinfoplay
                     orientation: 'vertical'
@@ -58,11 +58,11 @@
                 MDBoxLayout:
                     id: boxplaylistinfodown
                     orientation: 'vertical'
-                    size_hint: (1, 0.5)
+                    size_hint: (1, 0.8)
                     padding: 10
                     radius: [20,20,20,20]
                     MDBoxLayout:
-                        size_hint: (1, 0.5)
+                        size_hint: (1, 0.4)
                         orientation: 'vertical'
                         MDBoxLayout:
                             MDLabel:
@@ -87,7 +87,7 @@
                     MDBoxLayout:
                         id: boxprogressbar
                         orientation: 'horizontal'
-                        size_hint: (1, 0.3)
+                        size_hint: (1, 0.15)
                         MDLabel:
                             id: completeplaylist
                             text: 'Progresso: '
@@ -96,10 +96,31 @@
                             id: quantdown
                             text: '0/0'
                             size_hint: (0.6, 1)
+                    MDBoxLayout:
+                        id: boxselectresolutionplay
+                        size_hint: (1, 0.15)
+                        MDLabel:
+                            text: '720p'
+                        MDCheckbox:
+                            id: check720p
+                            size_hint: None, None
+                            size: "48dp", "48dp"
+                            pos_hint: {'center_x': .4, 'center_y': .5}
+                            on_active: app.searchplaylist.select_resolution_playlist(app, *args)
+                        MDLabel:
+                            text: '1080p'
+                        MDCheckbox:
+                            id: check1080p
+                            size_hint: None, None
+                            size: '48dp', '48dp'
+                            pos_hint:{'center_x': .4, 'center_y': 0.5}
+                            on_active: app.searchplaylist.select_resolution_playlist(app, *args)
 
                     MDTextField:
                         id: fieldplaylisdopdown
+                        size_hint: (1, 0.25)
                         hint_text: 'EX: 3-7 1,3,9 tudo todos'
                     MDRaisedButton:
                         text: 'Baixar'
+                        size_hint: (1, 0.15)
                         on_release: app.searchplaylist.download_playlist(app, fieldplaylisdopdown.text)

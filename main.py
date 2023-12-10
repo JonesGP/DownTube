@@ -50,6 +50,7 @@ progressbardown1 = None
 themedark = False
 downmultiplay = False #variavel que define se vai ser download de um video ou de uma playlist
 createfolder = False #variavel que define se vai ser criado uma pasta com da playlist
+selecresolutionplaylist = '720p' #variavel que define qual resolução vai ser baixada na playlist
 
 class DownTube(MDApp):
     def __init__(self, **kwargs):
@@ -64,6 +65,7 @@ class DownTube(MDApp):
         self.playlistvi = None
         self.pathsave = pathsave
         self.pathsavedefault = pathsavedefault
+        self.selecresolutionplaylist = selecresolutionplaylist
     def versao_atual(self):
         global versaoapp
         return f"Versão app: {versaoapp}"
@@ -121,14 +123,12 @@ class DownTube(MDApp):
 
         try:
             if type(linkvideo) == str:
-                print('teste 1')
                 yt = YouTube(linkvideo)
             elif type(linkvideo) == YouTube:
-                print('teste 2')
                 yt = linkvideo 
                 
         except:
-            self.show_alert_dialog('')
+            self.show_alert_dialog('O link não é valido ou o servidor está indisponível')
             return
         yt.register_on_progress_callback(self.on_progress)
         progressbardown1 = progressbardown
@@ -140,8 +140,6 @@ class DownTube(MDApp):
         sizevideo.text = f"Tempo: {str(formated_time)}"
         boxdownloads.clear_widgets()
         try:
-            for vi in yt.streams:
-                print(vi)
             for video in yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution'):
                 videosob.append(video)
                 resolutionslist.append(video.resolution)
@@ -153,7 +151,7 @@ class DownTube(MDApp):
             #Botão Audio yt.streams.filter(only_audio=True).order_by('abr').last().subtype
             boxdownloads.add_widget(MDRaisedButton(text=f"MP3 {str(int(yt.streams.filter(only_audio=True).order_by('abr').last().filesize_mb))}MB", on_release=self.create_button_callback(yt.streams.filter(only_audio=True).order_by('abr').last(), pathsave, None)))
         except Exception as error:
-            self.show_alert_dialog('')
+            self.show_alert_dialog('O link não é valido ou o servidor está indisponível')
             return
         
     def conver_audio(self, audio_file,output_file, output_format):
@@ -196,7 +194,7 @@ class DownTube(MDApp):
         monitorar_progresso(command)
     
     def join_video_audio(self, video_file, audio_file, output_file):
-        command = f'{ffmpeg_path} -i "{video_file}" -i "{audio_file}" -c copy "{output_file}"'
+        command = f'{ffmpeg_path} -i "{video_file}" -i "{audio_file}" -c:a mp3 -c:v copy "{output_file}"'
         os.system(command)
 
     def create_button_callback(self, video, pathsave, audio):
@@ -246,7 +244,6 @@ class DownTube(MDApp):
             pathsave = Path.home() / "Downloads"
         statusok = getattr(self.root.ids.hometab.children[0].ids, 'statusok')
         statusok.text = 'Baixando...'
-        print(video)
         video.download(pathsave)
         if audio != None:
             def editar_nome_arquivo(caminho_arquivo, novo_nome):
@@ -264,7 +261,6 @@ class DownTube(MDApp):
                 path_arquivo.rename(novo_caminho_arquivo)
             editar_nome_arquivo(f'{pathsave}\{video.default_filename}', f'video{video.default_filename}')
             audio.download(pathsave)
-            print(pathsave)
             
             video_file = f'{pathsave}\\video{video.default_filename}'
             audio_file = f'{pathsave}\{audio.default_filename}'
@@ -285,7 +281,7 @@ class DownTube(MDApp):
     def show_alert_dialog(self, error):
         if not self.dialog:
             self.dialog = MDDialog(
-                text="O link não é valido ou o servidor está indisponível",
+                text=f"{error}",
                 buttons=[
                     MDFlatButton(
                         text="Cancelar",
